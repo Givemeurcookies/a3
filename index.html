@@ -1,0 +1,154 @@
+<head>
+	<link rel="stylesheet" href="css/main.css">
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+	<link href='http://fonts.googleapis.com/css?family=Varela' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=PT+Sans+Narrow' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Lato:100,300,700' rel='stylesheet' type='text/css'>
+
+	<title>Koding101</title>
+	<link rel="icon" type="image/x-icon" href="ico/favicon-3.ico" />
+</head>
+<body>
+	<header>
+		<!--
+		<div class="languageselect">
+			<a href="en"><img src="img/murica.png" alt="" height="20px" width="28px"></a>
+			<img src="img/noflag.png" alt="" height="20px" width="28px">
+		</div>-->
+		<canvas class="canvas" id="fireflies"></canvas>
+		<h1>
+			<img src="img/barcode-logo-trans-inverted.png" alt="" height="130px" width="130px" class="logo">
+			<span>Koding</span>101
+			<span>For de mindreverdige.</span>
+		</h1>
+	</header>
+	<div class="wrapper">
+		<div>
+			<div class="txtbox">
+				<h2>Kurs</h2>
+				<p> Vi holder kurs på programmering, web utvikling og koding, dette er helt valgfritt å delta på når det er klubb møter. Vi lærer bort alt fra nyere teknologi til praktiske løsninger.
+			</div>
+			<div class="txtbox">
+				<h2>Konkurranser</h2>
+				<p>Vi har tenkt til å holde konkurranser vært semester, for de som vil får de en utfordring en måned før
+					konkurransen skal holdes. Premien varier etter kapitalet til klubben.</p>
+			</div>
+			<div class="txtbox">
+				<h2>Framtidsrettet</h2>
+				<p> Programmering og koding er kunnskap som utvilsomt er fremtidsrettet, vi ser mye bruk av programmering og data vitenskap idag og det er neppe behovet kommer til å synke. </p>
+			</div>
+			<div class="clear"></div>
+		</div>
+		<ul>
+			<li>Du må ikke kunne noe.</li>
+			<li>En valgfri arbeidsplan.</li>
+			<li>Du gjør hva du vil.</li>
+			<li>Tilgang til kursing, gratis!</li>
+			<li>Får møtt folk med felles interesser.</li>
+		</ul>
+		<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quibusdam, sunt ullam quo saepe iusto rerum harum veritatis ratione facere quas voluptas deleniti velit pariatur quos provident facilis molestias magni recusandae!</p>
+		<form action="" class="theform">
+			<input type="text" placeholder="Skriv inn din email...">
+			<input type="submit" value="Send">
+			<div class="clear"></div>
+		</form>
+	</div>
+	<footer>
+		© Jon Brede Skaug 2013
+	</footer>
+</body>
+<script type='text/javascript' src='lib/tweenjs.min.js'></script>
+<script>
+	var header = document.getElementsByTagName("h1")[0],
+		canvas = document.getElementById("fireflies"),
+		headerMeta, fireflies = new Array();
+
+	var ctx=canvas.getContext("2d");
+
+	function onResize(){
+		headerMeta = {
+		"width" : header.scrollWidth,
+		"height": header.scrollHeight
+		}
+		resizeCanvas();
+	}
+	function resizeCanvas(){
+		var pixelRatio = window.devicePixelRatio;
+		canvas.width  = headerMeta.width * pixelRatio,
+		canvas.height = headerMeta.height * pixelRatio,
+		canvas.style.width  = headerMeta.width,
+		canvas.style.height = headerMeta.height;
+		ctx.scale(pixelRatio, pixelRatio);
+	}
+	function draw(){
+		ctx.clearRect(0, 0, headerMeta.width, headerMeta.height);
+		for (var x = 0, xl = fireflies.length; x < xl; x++){
+			obj = fireflies[x];
+			if (obj.current >= obj.duration) {
+				fireflies[x] = Firefly(obj.x,obj.y,obj.size);
+				obj = fireflies[x];
+			}
+			ctx.beginPath();
+			obj.x = obj.startx + easeInOutCubic(obj.current, 0, (obj.endx-obj.startx), obj.duration), 
+			obj.y = obj.starty + easeInOutCubic(obj.current, 0, (obj.endy-obj.starty), obj.duration);
+
+			obj.current += 1;
+			fireflies[x] = obj;
+			ctx.arc(obj.x, obj.y, obj.size, 0, Math.PI*2);
+
+			ctx.closePath();
+			ctx.shadowBlur=18;
+			ctx.shadowColor="#FFE364";
+			ctx.fillStyle="#FFE364";
+			ctx.fill();
+		}
+	}
+	function Firefly(posx, posy, size){
+		var x = posx || headerMeta.width  * Math.random(),
+			y = posy || headerMeta.height * Math.random();
+
+		return {
+			"startx"   : x,
+			"starty"   : y,
+			"endx"     : headerMeta.width  * Math.random(),
+			"endy"     : headerMeta.height * Math.random(),
+			"x"        : x,
+			"y"        : y,
+			"size"     : size || Math.random(),
+			"current"  : 0,
+			"duration" : Math.random() * (900 - 300) + 300
+		}
+	}
+	function loop(){
+		draw();
+		requestAnimFrame(function() {
+          loop();
+        });
+	}
+	// Bindings
+	document.body.onresize = onResize;
+
+	// Shim
+	window.requestAnimFrame = (function(callback) {
+        return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
+    	function(callback) {
+    		window.setTimeout(callback, 1000 / 60);
+    	};
+    })();
+
+    function easeInOutCubic (t, b, c, d) {
+		t /= d/2;
+		if(t < 1) return c/2*t*t*t + b;
+		t -= 2;
+		return c/2*(t*t*t + 2) + b;
+	};
+
+    // Init
+    onResize();
+    loop();
+	setTimeout(function(){ 
+		for(var x = 0; x < 20; x++) fireflies[x] = Firefly(); 
+		
+	}, 100);
+
+</script>
